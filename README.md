@@ -7,3 +7,7 @@ This is useful for interactively testing a regular expression on different input
 ## Usage
 
 `M-x interis RET` enters Interis. Fill out the fields; the output will be updated in real time. The fields are not constrained to one line.
+
+## Preview
+
+https://user-images.githubusercontent.com/11722318/188220263-3befead5-596d-481b-a637-349650a4f241.mp4
