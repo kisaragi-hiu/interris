@@ -1,7 +1,8 @@
 (source melpa)
 (source gnu)
 
-(package-file "pkgname.el")
+(package-file "interis.el")
 
 (development
- (depends-on "buttercup"))
+ (depends-on "buttercup")
+ (depends-on "faceup"))
