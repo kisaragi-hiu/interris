@@ -1,9 +1,9 @@
-;;; interis.el --- Preview replace-regexp-in-string results -*- lexical-binding: t -*-
+;;; interris.el --- Preview replace-regexp-in-string results -*- lexical-binding: t -*-
 
 ;; Author: Kisaragi Hiu
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "25.1"))
-;; Homepage: https://kisaragi-hiu.com/projects/interis
+;; Homepage: https://kisaragi-hiu.com/projects/interris
 ;; Keywords: convenience
 
 
@@ -34,8 +34,8 @@
 
 (require 'cl-lib)
 
-(defun interis (&optional new)
-  "Start an Interis buffer.
+(defun interris (&optional new)
+  "Start an Interris buffer.
 
 If NEW is non-nil (or interactively with a
 \\[universal-argument]), always create a new buffer. Otherwise,
@@ -45,23 +45,23 @@ behavior as EWW or Eshell."
   (let ((buffer (funcall (if new
                              #'generate-new-buffer
                            #'get-buffer-create)
-                         "*Interis*")))
+                         "*Interris*")))
     (with-current-buffer buffer
-      (interis--initialize))
+      (interris--initialize))
     (pop-to-buffer buffer)))
 
-(defvar interis-map
+(defvar interris-map
   (let ((map (make-sparse-keymap)))
-    ;; (define-key map "a" #'interis-test)
+    ;; (define-key map "a" #'interris-test)
     map)
-  "Keymap for Interis.")
+  "Keymap for Interris.")
 
-(defvar-local interis--output-marker nil
+(defvar-local interris--output-marker nil
   "Buffer local variable used to track the start of the output section.")
-(defvar-local interis--last-output nil
+(defvar-local interris--last-output nil
   "Buffer local variable used to cache the previous output.")
 
-(defun interis--propertize-read-only (string inhibit-front inhibit-rear &rest extra-properties)
+(defun interris--propertize-read-only (string inhibit-front inhibit-rear &rest extra-properties)
   "Propertize STRING as read-only text.
 If INHIBIT-FRONT is non-nil, disallow editing immediately before.
 If INHIBIT-REAR is non-nil, disallow editing immediately after.
@@ -83,100 +83,100 @@ If EXTRA-PROPERTIES is non-nil, they are also passed to
                               '(read-only))
          extra-properties))
 
-(cl-defun interis--initialize ()
-  "Initialize the Interis buffer."
-  (when (eq major-mode 'interis-mode)
-    (cl-return-from interis--initialize))
+(cl-defun interris--initialize ()
+  "Initialize the Interris buffer."
+  (when (eq major-mode 'interris-mode)
+    (cl-return-from interris--initialize))
   (let ((inhibit-read-only t))
     (erase-buffer)
-    (setq major-mode 'interis-mode
-          mode-name "Interis")
+    (setq major-mode 'interris-mode
+          mode-name "Interris")
     (setq-local revert-buffer-function (lambda (&rest _)
                                          (setq major-mode nil)
-                                         (interis--initialize)))
-    (use-local-map interis-map)
-    (add-hook 'post-command-hook #'interis--update-output nil t)
+                                         (interris--initialize)))
+    (use-local-map interris-map)
+    (add-hook 'post-command-hook #'interris--update-output nil t)
     (save-excursion
       (insert
-       (interis--propertize-read-only "Welcome to Interis, the interactive `replace-regexp-in-string' previewer.
+       (interris--propertize-read-only "Welcome to Interris, the interactive `replace-regexp-in-string' previewer.
 
 " t t)
-       (interis--propertize-read-only "Input text:" t t
+       (interris--propertize-read-only "Input text:" t t
          'face 'bold
-         'interis-section 'input-text)
-       (interis--propertize-read-only "\n" t nil)
-       (interis--propertize-read-only "\n" nil t
+         'interris-section 'input-text)
+       (interris--propertize-read-only "\n" t nil)
+       (interris--propertize-read-only "\n" nil t
          'face 'hl-line)
-       (interis--propertize-read-only "Regexp:" t t
+       (interris--propertize-read-only "Regexp:" t t
          'face 'bold
-         'interis-section 'regexp)
-       (interis--propertize-read-only "\n" t nil)
-       (interis--propertize-read-only "\n" nil t
+         'interris-section 'regexp)
+       (interris--propertize-read-only "\n" t nil)
+       (interris--propertize-read-only "\n" nil t
          'face 'hl-line)
-       (interis--propertize-read-only "Replacement:" t t
+       (interris--propertize-read-only "Replacement:" t t
          'face 'bold
-         'interis-section 'replacement)
-       (interis--propertize-read-only "\n" t nil)
-       (interis--propertize-read-only "\n" nil t
+         'interris-section 'replacement)
+       (interris--propertize-read-only "\n" t nil)
+       (interris--propertize-read-only "\n" nil t
          'face 'hl-line)
-       (interis--propertize-read-only "Output:\n" t t
+       (interris--propertize-read-only "Output:\n" t t
          'face 'bold
-         'interis-section 'output))
+         'interris-section 'output))
       (let ((m (point-marker)))
-        (setq interis--output-marker m)))
-    (run-mode-hooks 'interis-hook)))
+        (setq interris--output-marker m)))
+    (run-mode-hooks 'interris-hook)))
 
-(defun interis--update-output ()
+(defun interris--update-output ()
   "Update the output section."
   (let ((output (replace-regexp-in-string
-                 (interis--get-regexp)
-                 (interis--get-replacement)
-                 (interis--get-input-text)))
+                 (interris--get-regexp)
+                 (interris--get-replacement)
+                 (interris--get-input-text)))
         (inhibit-read-only t)
         ;; Inhibit recording of undo information with a variable
         ;; called `buffer-undo-list' is just...
         (buffer-undo-list t))
-    (unless (equal output interis--last-output)
+    (unless (equal output interris--last-output)
       (save-excursion
-        (goto-char interis--output-marker)
+        (goto-char interris--output-marker)
         (delete-region (point) (point-max))
         (insert output))
-      (setq interis--last-output output))))
+      (setq interris--last-output output))))
 
-(defun interis--get-input-text ()
+(defun interris--get-input-text ()
   "Get the current input text."
   (save-excursion
     (goto-char (point-min))
     (cl-loop
      repeat 2
-     do (goto-char (next-single-property-change (point) 'interis-section)))
+     do (goto-char (next-single-property-change (point) 'interris-section)))
     (buffer-substring-no-properties
      ;; the 1+ and 1- cancel out the newlines
      (1+ (point))
-     (1- (next-single-property-change (point) 'interis-section)))))
+     (1- (next-single-property-change (point) 'interris-section)))))
 
-(defun interis--get-regexp ()
+(defun interris--get-regexp ()
   "Get the current regexp."
   (save-excursion
     (goto-char (point-min))
     (cl-loop
      repeat 4
-     do (goto-char (next-single-property-change (point) 'interis-section)))
+     do (goto-char (next-single-property-change (point) 'interris-section)))
     (buffer-substring-no-properties
      (1+ (point))
-     (1- (next-single-property-change (point) 'interis-section)))))
+     (1- (next-single-property-change (point) 'interris-section)))))
 
-(defun interis--get-replacement ()
+(defun interris--get-replacement ()
   "Get the current replacement."
   (save-excursion
     (goto-char (point-min))
     (cl-loop
      repeat 6
-     do (goto-char (next-single-property-change (point) 'interis-section)))
+     do (goto-char (next-single-property-change (point) 'interris-section)))
     (buffer-substring-no-properties
      (1+ (point))
-     (1- (next-single-property-change (point) 'interis-section)))))
+     (1- (next-single-property-change (point) 'interris-section)))))
 
-(provide 'interis)
+(provide 'interris)
 
-;;; interis.el ends here
+;;; interris.el ends here

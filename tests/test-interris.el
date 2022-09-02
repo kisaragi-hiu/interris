@@ -1,6 +1,6 @@
 ;; -*- mode: lisp-interaction; lexical-binding: t; -*-
 
-(require 'interis)
+(require 'interris)
 (require 'buttercup)
 
 (require 'faceup)
@@ -12,6 +12,6 @@
       (expect
        (faceup-test-equal
         (faceup-markup-string
-         (interis--propertize-read-only "Hello!" t t
+         (interris--propertize-read-only "Hello!" t t
            'face 'bold))
         "«B:«(read-only):t:Hello!»»")))))

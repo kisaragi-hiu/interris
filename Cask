@@ -1,7 +1,7 @@
 (source melpa)
 (source gnu)
 
-(package-file "interis.el")
+(package-file "interris.el")
 
 (development
  (depends-on "buttercup")
