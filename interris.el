@@ -34,6 +34,7 @@
 
 (require 'cl-lib)
 
+;;;###autoload
 (defun interris (&optional new)
   "Start an Interris buffer.
 
